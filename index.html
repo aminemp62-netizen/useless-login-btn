@@ -1,1 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Runaway Login</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                Arial,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    #302060 0,
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at bottom right,
+                    #163d5c 0,
+                    transparent 35%
+                ),
+                #090b12;
+
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+
+            overflow: hidden;
+        }
+
+
+        /* =========================
+           LOGIN CARD
+        ========================= */
+
+        .login-card {
+            width: min(420px, 100%);
+
+            padding: 38px;
+
+            background:
+                rgba(20, 23, 34, 0.88);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.1);
+
+            border-radius: 24px;
+
+            box-shadow:
+                0 25px 80px
+                rgba(0, 0, 0, 0.45);
+
+            backdrop-filter: blur(18px);
+
+            position: relative;
+        }
+
+
+        /* =========================
+           LOGO
+        ========================= */
+
+        .logo {
+            width: 58px;
+            height: 58px;
+
+            border-radius: 16px;
+
+            display: grid;
+            place-items: center;
+
+            margin-bottom: 22px;
+
+            font-size: 28px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ff315c,
+                    #8b5cf6
+                );
+
+            box-shadow:
+                0 10px 30px
+                rgba(139, 92, 246, 0.25);
+        }
+
+
+        /* =========================
+           HEADING
+        ========================= */
+
+        h1 {
+            font-size: 30px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .subtitle {
+            color: #9da3b5;
+
+            font-size: 14px;
+
+            margin-bottom: 30px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           FORM FIELD
+        ========================= */
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+
+        label {
+            display: block;
+
+            color: #dfe2ea;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            margin-bottom: 8px;
+        }
+
+
+        input {
+            width: 100%;
+
+            height: 48px;
+
+            border:
+                1px solid #303544;
+
+            border-radius: 12px;
+
+            outline: none;
+
+            background: #11141d;
+
+            color: white;
+
+            padding: 0 14px;
+
+            font-size: 14px;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        input::placeholder {
+            color: #656b7c;
+        }
+
+
+        input:focus {
+            border-color: #8b5cf6;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(139, 92, 246, 0.12);
+        }
+
+
+        /* =========================
+           PASSWORD
+        ========================= */
+
+        .password-row {
+            position: relative;
+        }
+
+
+        .password-row input {
+            padding-right: 50px;
+        }
+
+
+        .show-password {
+            position: absolute;
+
+            right: 12px;
+
+            top: 13px;
+
+            border: none;
+
+            background: none;
+
+            color: #9da3b5;
+
+            cursor: pointer;
+
+            font-size: 18px;
+
+            padding: 4px;
+        }
+
+
+        /* =========================
+           BUTTON AREA
+        ========================= */
+
+        .button-area {
+            width: 100%;
+
+            height: 90px;
+
+            position: relative;
+
+            margin-top: 8px;
+
+            border-radius: 15px;
+
+            overflow: hidden;
+        }
+
+
+        /* =========================
+           LOGIN BUTTON
+        ========================= */
+
+        #loginBtn {
+            position: absolute;
+
+            left: 0;
+
+            top: 18px;
+
+            height: 50px;
+
+            padding:
+                0 28px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ff315c,
+                    #8b5cf6
+                );
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            white-space: nowrap;
+
+            box-shadow:
+                0 10px 25px
+                rgba(139, 92, 246, 0.25);
+
+            /*
+             * Performance
+             */
+            will-change: transform;
+
+            transform:
+                translate3d(
+                    0,
+                    0,
+                    0
+                );
+
+            transition:
+                transform
+                0.18s
+                cubic-bezier(
+                    0.22,
+                    1,
+                    0.36,
+                    1
+                );
+
+            user-select: none;
+
+            touch-action: none;
+
+            z-index: 5;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            min-height: 22px;
+
+            text-align: center;
+
+            font-size: 13px;
+
+            margin-top: 3px;
+
+            transition:
+                color 0.2s ease;
+        }
+
+
+        /*
+         * Runaway messages
+         */
+        .message.warning {
+            color: #ff315c;
+        }
+
+
+        /*
+         * Successful login
+         */
+        .message.success {
+            color: #67e8a5;
+        }
+
+
+        /* =========================
+           HINT
+        ========================= */
+
+        .hint {
+            text-align: center;
+
+            color: #656b7c;
+
+            font-size: 12px;
+
+            margin-top: 22px;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 14px;
+            }
+
+            .login-card {
+                padding:
+                    28px 22px;
+
+                border-radius: 20px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .subtitle {
+                margin-bottom: 25px;
+            }
+
+            .button-area {
+                height: 100px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         LOGIN CARD
+    ========================= -->
+
+    <div class="login-card">
+
+
+        <!-- LOGO -->
+
+        <div class="logo">
+            🔐
+        </div>
+
+
+        <!-- TITLE -->
+
+        <h1>
+            Welcome back
+        </h1>
+
+
+        <!-- DESCRIPTION -->
+
+        <p class="subtitle">
+
+            Sign in to continue.
+            The button is definitely going
+            to cooperate. Probably.
+
+        </p>
+
+
+        <!-- =========================
+             FORM
+        ========================= -->
+
+        <form id="loginForm">
+
+
+            <!-- EMAIL -->
+
+            <div class="field">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="field">
+
+                <label for="password">
+                    Password
+                </label>
+
+
+                <div class="password-row">
+
+                    <input
+                        id="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        id="showPassword"
+                        aria-label="Show password"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 RUNAWAY BUTTON AREA
+            ========================= -->
+
+            <div
+                class="button-area"
+                id="buttonArea"
+            >
+
+                <button
+                    id="loginBtn"
+                    type="submit"
+                >
+                    Login
+                </button>
+
+            </div>
+
+
+            <!-- MESSAGE -->
+
+            <div
+                class="message"
+                id="message"
+            ></div>
+
+
+        </form>
+
+
+        <!-- HINT -->
+
+        <p class="hint">
+
+            Hint: Getting close to the
+            button may have consequences.
+
+        </p>
+
+
+    </div>
+
+
+
+<script>
+
+    /* =========================================
+       ELEMENTS
+    ========================================= */
+
+    const loginBtn =
+        document.getElementById(
+            "loginBtn"
+        );
+
+    const buttonArea =
+        document.getElementById(
+            "buttonArea"
+        );
+
+    const loginForm =
+        document.getElementById(
+            "loginForm"
+        );
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+    const password =
+        document.getElementById(
+            "password"
+        );
+
+    const showPassword =
+        document.getElementById(
+            "showPassword"
+        );
+
+
+    /* =========================================
+       STATE
+    ========================================= */
+
+    let lastMoveTime = 0;
+
+    let isMoving = false;
+
+    let loginSuccess = false;
+
+
+    /*
+     * Minimum time between movements.
+     *
+     * This prevents lag caused by
+     * excessive mouse events.
+     */
+
+    const MOVE_COOLDOWN = 220;
+
+
+    /*
+     * Distance from button before
+     * it escapes.
+     */
+
+    const DANGER_DISTANCE = 90;
+
+
+    /* =========================================
+       RUNAWAY MESSAGES
+    ========================================= */
+
+    const messages = [
+
+        "Nice try 😏",
+
+        "Too slow!",
+
+        "You almost had it.",
+
+        "Why are you chasing me?",
+
+        "I don't think so.",
+
+        "Catch me if you can!",
+
+        "The button has escaped.",
+
+        "Still trying? Respect.",
+
+        "Not today 😂",
+
+        "Almost!"
+
+    ];
+
+
+    /* =========================================
+       MOVE BUTTON
+    ========================================= */
+
+    function moveButton() {
+
+
+        /*
+         * Don't move after successful login.
+         */
+
+        if (loginSuccess) {
+            return;
+        }
+
+
+        /*
+         * Get container dimensions.
+         */
+
+        const areaWidth =
+            buttonArea.clientWidth;
+
+        const areaHeight =
+            buttonArea.clientHeight;
+
+
+        /*
+         * Get button dimensions.
+         */
+
+        const buttonWidth =
+            loginBtn.offsetWidth;
+
+        const buttonHeight =
+            loginBtn.offsetHeight;
+
+
+        /*
+         * Calculate safe area.
+         */
+
+        const maxX =
+            Math.max(
+                0,
+                areaWidth - buttonWidth
+            );
+
+        const maxY =
+            Math.max(
+                0,
+                areaHeight - buttonHeight
+            );
+
+
+        /*
+         * Generate random position.
+         */
+
+        const x =
+            Math.random() * maxX;
+
+        const y =
+            Math.random() * maxY;
+
+
+        /*
+         * Store position.
+         */
+
+        loginBtn.style.setProperty(
+            "--x",
+            `${x}px`
+        );
+
+        loginBtn.style.setProperty(
+            "--y",
+            `${y}px`
+        );
+
+
+        /*
+         * GPU-friendly movement.
+         */
+
+        loginBtn.style.transform =
+            `translate3d(
+                ${x}px,
+                ${y}px,
+                0
+            )`;
+
+
+        /*
+         * IMPORTANT:
+         *
+         * Runaway messages are RED.
+         */
+
+        message.classList.remove(
+            "success"
+        );
+
+        message.classList.add(
+            "warning"
+        );
+
+
+        /*
+         * Pick random message.
+         */
+
+        message.textContent =
+            messages[
+                Math.floor(
+                    Math.random() *
+                    messages.length
+                )
+            ];
+    }
+
+
+    /* =========================================
+       MOUSE DETECTION
+    ========================================= */
+
+    document.addEventListener(
+        "mousemove",
+        (event) => {
+
+
+            /*
+             * Stop processing if button
+             * is already moving.
+             */
+
+            if (isMoving) {
+                return;
+            }
+
+
+            /*
+             * Don't move after success.
+             */
+
+            if (loginSuccess) {
+                return;
+            }
+
+
+            /*
+             * Throttle mouse events.
+             */
+
+            const now =
+                performance.now();
+
+
+            if (
+                now - lastMoveTime <
+                MOVE_COOLDOWN
+            ) {
+
+                return;
+            }
+
+
+            /*
+             * Get button position.
+             */
+
+            const rect =
+                loginBtn.getBoundingClientRect();
+
+
+            /*
+             * Find button center.
+             */
+
+            const centerX =
+                rect.left +
+                rect.width / 2;
+
+            const centerY =
+                rect.top +
+                rect.height / 2;
+
+
+            /*
+             * Distance from cursor.
+             */
+
+            const dx =
+                event.clientX -
+                centerX;
+
+            const dy =
+                event.clientY -
+                centerY;
+
+
+            /*
+             * Squared distance.
+             *
+             * Faster than Math.sqrt().
+             */
+
+            const distanceSquared =
+                dx * dx +
+                dy * dy;
+
+
+            /*
+             * Check danger zone.
+             */
+
+            if (
+                distanceSquared <
+                DANGER_DISTANCE *
+                DANGER_DISTANCE
+            ) {
+
+
+                isMoving = true;
+
+                lastMoveTime = now;
+
+
+                /*
+                 * Move button.
+                 */
+
+                moveButton();
+
+
+                /*
+                 * Unlock movement
+                 * after animation.
+                 */
+
+                setTimeout(
+                    () => {
+
+                        isMoving = false;
+
+                    },
+                    180
+                );
+
+            }
+
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    /* =========================================
+       MOUSE ENTER
+    ========================================= */
+
+    loginBtn.addEventListener(
+        "mouseenter",
+        () => {
+
+
+            if (loginSuccess) {
+                return;
+            }
+
+
+            const now =
+                performance.now();
+
+
+            if (
+                now - lastMoveTime <
+                MOVE_COOLDOWN
+            ) {
+
+                return;
+            }
+
+
+            lastMoveTime = now;
+
+            moveButton();
+
+        }
+    );
+
+
+    /* =========================================
+       PASSWORD SHOW / HIDE
+    ========================================= */
+
+    showPassword.addEventListener(
+        "click",
+        () => {
+
+
+            if (
+                password.type ===
+                "password"
+            ) {
+
+                password.type =
+                    "text";
+
+                showPassword.textContent =
+                    "🙈";
+
+            }
+
+            else {
+
+                password.type =
+                    "password";
+
+                showPassword.textContent =
+                    "👁";
+
+            }
+
+        }
+    );
+
+
+    /* =========================================
+       LOGIN SUCCESS
+    ========================================= */
+
+    loginForm.addEventListener(
+        "submit",
+        (event) => {
+
+
+            /*
+             * Stop normal form submission.
+             */
+
+            event.preventDefault();
+
+
+            /*
+             * Login is now successful.
+             */
+
+            loginSuccess = true;
+
+
+            /*
+             * Remove RED warning.
+             */
+
+            message.classList.remove(
+                "warning"
+            );
+
+
+            /*
+             * Add GREEN success.
+             */
+
+            message.classList.add(
+                "success"
+            );
+
+
+            /*
+             * Success message.
+             */
+
+            message.textContent =
+                "🎉 You actually caught it! Login successful.";
+
+
+            /*
+             * Small success animation.
+             */
+
+            const currentTransform =
+                loginBtn.style.transform;
+
+
+            loginBtn.style.transform =
+                currentTransform +
+                " scale(1.05)";
+
+
+            /*
+             * Disable button movement.
+             */
+
+            loginBtn.style.cursor =
+                "default";
+
+        }
+    );
+
+
+    /* =========================================
+       MOBILE / TOUCH
+    ========================================= */
+
+    loginBtn.addEventListener(
+        "touchstart",
+        (event) => {
+
+
+            event.preventDefault();
+
+
+            if (loginSuccess) {
+                return;
+            }
+
+
+            const now =
+                performance.now();
+
+
+            if (
+                now - lastMoveTime <
+                MOVE_COOLDOWN
+            ) {
+
+                return;
+            }
+
+
+            lastMoveTime = now;
+
+            moveButton();
+
+        },
+        {
+            passive: false
+        }
+    );
+
+
+    /* =========================================
+       WINDOW RESIZE
+    ========================================= */
+
+    window.addEventListener(
+        "resize",
+        () => {
+
+
+            if (loginSuccess) {
+                return;
+            }
+
+
+            /*
+             * Reset button position so
+             * it never gets stuck outside
+             * the container.
+             */
+
+            loginBtn.style.transform =
+                "translate3d(0, 0, 0)";
+
+            loginBtn.style.setProperty(
+                "--x",
+                "0px"
+            );
+
+            loginBtn.style.setProperty(
+                "--y",
+                "0px"
+            );
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
