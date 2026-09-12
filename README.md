@@ -194,12 +194,6 @@ _The initial Runaway Login interface with email and password fields._
 
 _The Login button moves away when the cursor gets too close, while a funny warning message appears in red._
 
-### 3. Successful Login
-
-![Screenshot3]([https://github.com/aminemp62-netizen/useless-login-btn/blob/main/Screenshot%202026-09-12%20053944.png)
-
-_After the user finally catches the button, the success message appears in green and the button stops moving._
-
 ---
 
 ## Why This Project Is Useless
